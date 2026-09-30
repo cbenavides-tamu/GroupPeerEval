@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peer Contribution Evaluation for Group Work</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar & slider styles */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #2563eb;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            transition: transform 0.1s ease;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+        .step-transition {
+            transition: all 0.25s ease-in-out;
+        }
+    </style>
+</head>
+<body class="font-sans text-slate-800 bg-slate-50 min-h-full flex flex-col justify-between">
+
+    <!-- Top Banner / Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 py-3 sm:px-6 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="bg-brand-600 text-white p-2 rounded-lg shadow-sm">
+                    <i class="fa-solid fa-users-viewfinder text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-900 leading-tight">Peer Contribution Evaluation</h1>
+                    <p class="text-xs text-slate-500 hidden sm:block">Individual & Group Work Assessment</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2">
+                <button onclick="openScriptModal()" class="text-xs font-medium text-slate-600 hover:text-brand-600 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-md transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-code"></i>
+                    <span>Apps Script Guide</span>
+                </button>
+                <button onclick="openSettingsModal()" class="text-xs font-medium text-slate-600 hover:text-brand-600 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-md transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Sheet Config</span>
+                </button>
+                <button onclick="resetFormConfirmation()" class="text-xs font-medium text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-md transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    <span class="hidden sm:inline">Reset Form</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-6 sm:px-6 flex-grow w-full">
+        <!-- Progress Stepper -->
+        <div class="mb-8 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="flex justify-between items-center mb-2">
+                <span id="stepBadge" class="text-xs font-semibold uppercase tracking-wider text-brand-600 bg-brand-50 px-2.5 py-1 rounded-full">
+                    Step 1 of 4
+                </span>
+                <span id="stepTitleText" class="text-sm font-medium text-slate-600">
+                    Student & Team Identification
+                </span>
+            </div>
+            
+            <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                <div id="progressBar" class="bg-brand-600 h-2.5 rounded-full transition-all duration-300" style="width: 25%"></div>
+            </div>
+
+            <!-- Visual Step Indicator Nodes -->
+            <div class="grid grid-cols-4 gap-2 mt-4 text-center text-xs font-medium text-slate-500">
+                <button onclick="goToStep(1)" id="stepNode1" class="py-1.5 px-1 rounded transition text-brand-700 font-semibold border-b-2 border-brand-600">
+                    1. Team Info
+                </button>
+                <button onclick="goToStep(2)" id="stepNode2" class="py-1.5 px-1 rounded transition hover:text-slate-700">
+                    2. Personal Work
+                </button>
+                <button onclick="goToStep(3)" id="stepNode3" class="py-1.5 px-1 rounded transition hover:text-slate-700">
+                    3. Team Allocation
+                </button>
+                <button onclick="goToStep(4)" id="stepNode4" class="py-1.5 px-1 rounded transition hover:text-slate-700">
+                    4. Peer Feedback
+                </button>
+            </div>
+        </div>
+
+        <form id="evalForm" onsubmit="handleFormSubmit(event)" class="space-y-6">
+            
+            <!-- STEP 1: Student & Team Identification -->
+            <div id="step1" class="step-card bg-white p-6 sm:p-8 rounded-xl border border-slate-200 shadow-sm space-y-6">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900 mb-1">Student & Team Identification</h2>
+                    <p class="text-sm text-slate-500">Please enter your info and list all other members in your group project.</p>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Q1: Your Name -->
+                    <div>
+                        <label for="studentName" class="block text-sm font-semibold text-slate-800 mb-1">
+                            1. Your Name <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="studentName" required placeholder="First and Last Name" 
+                            class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition"
+                            oninput="updateUserInAllocation()">
+                    </div>
+
+                    <!-- Q2: Group Members -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">
+                            2. Group Members <span class="text-red-500">*</span>
+                        </label>
+                        <p class="text-xs text-slate-500 mb-2">
+                            List all <strong>other</strong> teammates in your group (excluding yourself).
+                        </p>
+
+                        <!-- Input to add teammate -->
+                        <div class="flex gap-2 mb-3">
+                            <input type="text" id="newMemberInput" placeholder="Enter teammate name..."
+                                class="flex-grow px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-sm"
+                                onkeypress="if(event.key === 'Enter'){ event.preventDefault(); addGroupMember();}">
+                            <button type="button" onclick="addGroupMember()" 
+                                class="bg-brand-600 hover:bg-brand-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-user-plus"></i> Add Member
+                            </button>
+                        </div>
+
+                        <!-- Notice Box -->
+                        <div class="p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-800 flex items-start gap-2 mb-3">
+                            <i class="fa-solid fa-circle-info text-blue-600 mt-0.5"></i>
+                            <span>Adding names here will auto-populate them in Questions 9 & 10 for detailed peer scoring and custom feedback!</span>
+                        </div>
+
+                        <!-- Dynamic Member Chips Container -->
+                        <div id="membersList" class="flex flex-wrap gap-2 pt-1 min-h-[40px] p-2 bg-slate-50 rounded-lg border border-dashed border-slate-200">
+                            <p id="emptyMembersMsg" class="text-xs text-slate-400 italic py-1 px-2">No teammates added yet. Type a name above and click "Add Member".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end pt-4">
+                    <button type="button" onclick="goToStep(2)" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-2.5 rounded-lg transition flex items-center gap-2">
+                        Next: Personal Work <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 2: Your Personal Contributions -->
+            <div id="step2" class="step-card bg-white p-6 sm:p-8 rounded-xl border border-slate-200 shadow-sm space-y-6 hidden">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900 mb-1">Your Personal Contributions</h2>
+                    <p class="text-sm text-slate-500">Provide specific detail regarding your individual efforts.</p>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Q3 -->
+                    <div>
+                        <label for="q3_contributions" class="block text-sm font-semibold text-slate-800 mb-1">
+                            3. What did you personally contribute to the development of your group project? <span class="text-red-500">*</span>
+                        </label>
+                        <p class="text-xs text-slate-500 mb-2">Be specific. Identify materials, questions, instructions, content, research, slides, game components, examples, or other elements that you personally created or substantially revised.</p>
+                        <textarea id="q3_contributions" rows="3" required placeholder="Describe your overall contributions..." 
+                            class="w-full p-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-sm"></textarea>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div>
+                        <label for="q4_specificPart" class="block text-sm font-semibold text-slate-800 mb-1">
+                            4. Identify ONE specific part of the group's activity that you personally developed or substantially revised. <span class="text-red-500">*</span>
+                        </label>
+                        <p class="text-xs text-slate-500 mb-2">Describe exactly what you did and how your contribution appeared in the activity the class experienced today.</p>
+                        <textarea id="q4_specificPart" rows="3" required placeholder="Describe one specific highlight..." 
+                            class="w-full p-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-sm"></textarea>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div>
+                        <label for="q5_decision" class="block text-sm font-semibold text-slate-800 mb-1">
+                            5. Describe one substantive decision you personally participated in making while the group developed the activity. <span class="text-red-500">*</span>
+                        </label>
+                        <p class="text-xs text-slate-500 mb-2">What was the decision? What options did the group consider? What did you recommend or contribute to the decision, and why?</p>
+                        <textarea id="q5_decision" rows="3" required placeholder="Explain a major decision point..." 
+                            class="w-full p-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-sm"></textarea>
+                    </div>
+
+                    <!-- Q6 -->
+                    <div>
+                        <label for="q6_prep" class="block text-sm font-semibold text-slate-800 mb-1">
+                            6. What preparation did you personally complete outside of class for the project? <span class="text-red-500">*</span>
+                        </label>
+                        <p class="text-xs text-slate-500 mb-2">Describe the work you completed, approximately when you completed it, and how it contributed to the final activity. If you did not complete preparation outside class, simply state that.</p>
+                        <textarea id="q6_prep" rows="3" required placeholder="Detail your out-of-class prep work..." 
+                            class="w-full p-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-sm"></textarea>
+                    </div>
+
+                    <!-- Q7: Approx % YOU Completed -->
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label for="q7_selfPercent" class="block text-sm font-semibold text-slate-800">
+                                7. Approx % YOU Completed <span class="text-red-500">*</span>
+                            </label>
+                            <span id="q7ValueBadge" class="text-sm font-bold text-brand-600 bg-brand-50 px-3 py-1 rounded-full border border-brand-200">
+                                25%
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-3">Estimate your individual share of total preparation/development work:</p>
+
+                        <!-- Preset percent buttons -->
+                        <div class="flex gap-2 mb-3">
+                            <button type="button" onclick="setQ7Percent(0)" class="flex-1 py-1 px-2 text-xs border rounded-md hover:bg-slate-100">0%</button>
+                            <button type="button" onclick="setQ7Percent(25)" class="flex-1 py-1 px-2 text-xs border rounded-md hover:bg-slate-100">25%</button>
+                            <button type="button" onclick="setQ7Percent(50)" class="flex-1 py-1 px-2 text-xs border rounded-md hover:bg-slate-100">50%</button>
+                            <button type="button" onclick="setQ7Percent(75)" class="flex-1 py-1 px-2 text-xs border rounded-md hover:bg-slate-100">75%</button>
+                            <button type="button" onclick="setQ7Percent(100)" class="flex-1 py-1 px-2 text-xs border rounded-md hover:bg-slate-100">100%</button>
+                        </div>
+
+                        <input type="range" id="q7_selfPercent" min="0" max="100" step="5" value="25"
+                            class="w-full accent-brand-600 cursor-pointer" oninput="updateQ7Badge(this.value)">
+                    </div>
+
+                    <!-- Q8 -->
+                    <div>
+                        <label for="q8_evidence" class="block text-sm font-semibold text-slate-800 mb-1">
+                            8. What evidence supports that percentage? <span class="text-red-500">*</span>
+                        </label>
+                        <textarea id="q8_evidence" rows="2" required placeholder="Explain why you assigned yourself this percentage..." 
+                            class="w-full p-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-sm"></textarea>
+                    </div>
+                </div>
+
+                <div class="flex justify-between pt-4 border-t border-slate-100">
+                    <button type="button" onclick="goToStep(1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-5 py-2.5 rounded-lg transition">
+                        <i class="fa-solid fa-arrow-left"></i> Previous
+                    </button>
+                    <button type="button" onclick="goToStep(3)" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-2.5 rounded-lg transition flex items-center gap-2">
+                        Next: Team Allocation <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 3: Team Work Allocation (Must equal 100%) -->
+            <div id="step3" class="step-card bg-white p-6 sm:p-8 rounded-xl border border-slate-200 shadow-sm space-y-6 hidden">
+                <div>
+                    <div class="flex justify-between items-start flex-wrap gap-2">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900 mb-1">9. Team Work Allocation</h2>
+                            <p class="text-sm text-slate-500">Distribute estimated work shares across all group members. <strong>Must equal exactly 100%</strong>.</p>
+                        </div>
+                        <button type="button" onclick="distributeEvenly()" class="text-xs bg-slate-100 hover:bg-brand-50 hover:text-brand-700 hover:border-brand-300 text-slate-700 font-medium px-3 py-2 rounded-lg border border-slate-200 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-scale-balanced"></i> Distribute Evenly
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Interactive Sliders Instruction Box -->
+                <div class="p-4 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900 space-y-1">
+                    <div class="font-bold flex items-center gap-1.5 text-amber-800">
+                        <i class="fa-solid fa-sliders text-amber-600"></i> Interactive Sliders Instruction:
+                    </div>
+                    <p>Adjust the sliders for each team member so their estimated preparation work equals 100% total. The list below automatically includes you and your teammates from Step 1.</p>
+                </div>
+
+                <!-- Live Allocation Progress Segment Bar -->
+                <div class="space-y-1.5">
+                    <div class="flex justify-between text-xs font-semibold">
+                        <span>Allocation Distribution Preview</span>
+                        <span id="allocationSumText" class="text-red-600">0% / 100%</span>
+                    </div>
+                    <div id="stackedBarContainer" class="w-full bg-slate-100 h-4 rounded-lg flex overflow-hidden border border-slate-200">
+                        <!-- Dynamic colored segments will go here -->
+                    </div>
+                </div>
+
+                <!-- Dynamic Member Sliders Container -->
+                <div id="allocationSlidersContainer" class="space-y-4 pt-2">
+                    <!-- Dynamic Rows populated by JavaScript -->
+                </div>
+
+                <!-- Total Validation Box -->
+                <div id="allocationStatusBox" class="p-4 rounded-xl border text-sm font-medium flex items-center justify-between bg-red-50 border-red-200 text-red-800">
+                    <div class="flex items-center gap-2">
+                        <i id="allocationStatusIcon" class="fa-solid fa-circle-exclamation text-lg text-red-600"></i>
+                        <span id="allocationStatusMsg">Total group allocation must equal exactly 100%. (Current: 0%)</span>
+                    </div>
+                    <span id="allocationDiffBadge" class="text-xs px-2.5 py-1 rounded-full font-bold bg-red-200 text-red-900">
+                        Needs Adjustment
+                    </span>
+                </div>
+
+                <div class="flex justify-between pt-4 border-t border-slate-100">
+                    <button type="button" onclick="goToStep(2)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-5 py-2.5 rounded-lg transition">
+                        <i class="fa-solid fa-arrow-left"></i> Previous
+                    </button>
+                    <button type="button" onclick="goToStep(4)" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-2.5 rounded-lg transition flex items-center gap-2">
+                        Next: Peer Feedback <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 4: Teammate Contributions & Context -->
+            <div id="step4" class="step-card bg-white p-6 sm:p-8 rounded-xl border border-slate-200 shadow-sm space-y-6 hidden">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900 mb-1">Teammate Contributions & Context</h2>
+                    <p class="text-sm text-slate-500">Provide qualitative details about what your peers contributed.</p>
+                </div>
+
+                <!-- Q10 Container (Auto-populated cards per teammate) -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-800 mb-1">
+                        10. Briefly describe what EACH of your teammates contributed to the final activity. <span class="text-red-500">*</span>
+                    </label>
+                    <div class="p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-800 mb-4 flex items-start gap-2">
+                        <i class="fa-solid fa-lightbulb text-blue-600 mt-0.5"></i>
+                        <span><strong>Focus on observable contributions:</strong> Describe actual tasks completed (e.g. created game board, researched examples, formatted slides). If you are unaware of a contribution from a particular member, you may state that rather than guessing.</span>
+                    </div>
+
+                    <!-- Dynamic Teammate cards -->
+                    <div id="teammatesFeedbackContainer" class="space-y-4">
+                        <p id="noTeammatesFeedbackMsg" class="text-sm text-slate-400 italic p-4 bg-slate-50 rounded-lg text-center">
+                            No teammates were added in Step 1. Go back to Step 1 if you worked in a group!
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Q11: Optional Context -->
+                <div>
+                    <label for="q11_distributionContext" class="block text-sm font-semibold text-slate-800 mb-1">
+                        11. Is there anything about the distribution of work that I should know when evaluating individual contributions? <span class="text-xs font-normal text-slate-500">(Optional)</span>
+                    </label>
+                    <p class="text-xs text-slate-500 mb-2">
+                        This is your opportunity to provide context that may not be visible from the final presentation. Please focus on specific behaviors, contributions, or circumstances rather than judgments about teammates.
+                    </p>
+                    <textarea id="q11_distributionContext" rows="3" placeholder="Provide any additional context for your instructor..." 
+                        class="w-full p-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-sm"></textarea>
+                </div>
+
+                <!-- Q12: Confirmation Checkbox -->
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                        <input type="checkbox" id="q12_confirm" required class="mt-1 h-4 w-4 text-brand-600 focus:ring-brand-500 border-slate-300 rounded">
+                        <span class="text-sm text-slate-700 leading-snug">
+                            <strong>12. Confirmation <span class="text-red-500">*</span></strong><br>
+                            I confirm that my responses accurately represent my contribution to this exercise to the best of my knowledge.
+                        </span>
+                    </label>
+                </div>
+
+                <div class="flex justify-between pt-4 border-t border-slate-100">
+                    <button type="button" onclick="goToStep(3)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-5 py-2.5 rounded-lg transition">
+                        <i class="fa-solid fa-arrow-left"></i> Previous
+                    </button>
+                    <button type="submit" id="submitBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-3 rounded-lg shadow-md transition flex items-center gap-2 text-base">
+                        <i class="fa-solid fa-paper-plane"></i> Submit Evaluation
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- SUBMISSION SUCCESS MODAL -->
+        <div id="successModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl text-center space-y-4 animate-in fade-in zoom-in duration-200">
+                <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900">Evaluation Submitted!</h3>
+                <p class="text-sm text-slate-600">
+                    Thank you. Your peer contribution evaluation has been recorded successfully.
+                </p>
+                <div id="submissionSummaryBox" class="text-left bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-600 max-h-48 overflow-y-auto font-mono">
+                    <!-- JSON summary inserted here -->
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button onclick="copySubmissionData()" class="flex-1 py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-sm transition">
+                        <i class="fa-regular fa-copy"></i> Copy Data
+                    </button>
+                    <button onclick="window.location.reload()" class="flex-1 py-2.5 px-4 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-sm transition">
+                        Done / New Response
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETTINGS MODAL (Google Sheet Web App URL Configuration) -->
+        <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-gear text-brand-600"></i> Google Sheet Endpoint Configuration
+                    </h3>
+                    <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 text-lg">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                
+                <p class="text-xs text-slate-600">
+                    Set the Google Apps Script Web App URL to direct form responses to your Google Sheet.
+                </p>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Google Web App Exec URL:</label>
+                    <input type="text" id="googleSheetUrlInput" placeholder="https://script.google.com/macros/s/AKfycbwkIX9aEbaH5YpBGKsN4cRBbNeqjKdeNTGEJ1YM8Bmog3ZbQDSqjpCIBJ4i327rb18l0w/exec"
+                        class="w-full p-2.5 rounded-lg border border-slate-300 text-xs font-mono focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-1">
+                    <div class="font-semibold text-slate-700">Default Target URL in Code:</div>
+                    <code id="currentCodeUrlDisplay" class="text-brand-600 break-all font-mono text-[11px]">PLACE_GOOGLE_URL_HERE</code>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t">
+                    <button onclick="closeSettingsModal()" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-xs font-medium hover:bg-slate-200">Cancel</button>
+                    <button onclick="saveGoogleUrlSetting()" class="px-4 py-2 bg-brand-600 text-white rounded-lg text-xs font-medium hover:bg-brand-700">Save Configuration</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- GOOGLE APPS SCRIPT CODE GUIDE MODAL -->
+        <div id="scriptModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-brands fa-google text-green-600"></i> Google Apps Script Setup Instructions
+                    </h3>
+                    <button onclick="closeScriptModal()" class="text-slate-400 hover:text-slate-600 text-lg">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="overflow-y-auto space-y-3 text-xs text-slate-600 pr-1">
+                    <ol class="list-decimal list-inside space-y-2 font-medium">
+                        <li>Create a new <strong>Google Sheet</strong> in your Google Drive.</li>
+                        <li>Go to <strong>Extensions &gt; Apps Script</strong>.</li>
+                        <li>Paste the snippet below into <code>Code.gs</code> and click <strong>Save</strong>:</li>
+                    </ol>
+
+                    <div class="relative">
+                        <pre class="bg-slate-900 text-slate-100 p-3 rounded-lg font-mono text-[11px] overflow-x-auto">
+function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var data = JSON.parse(e.postData.contents);
+    
+    // Auto-create header row if sheet is empty
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow([
+        "Timestamp", "Student Name", "Teammates", 
+        "Q3 Contributions", "Q4 Specific Part", "Q5 Decision", 
+        "Q6 Prep Work", "Q7 Self %", "Q8 Evidence", 
+        "Q9 Group Allocations", "Q10 Peer Descriptions", 
+        "Q11 Additional Context"
+      ]);
+    }
+    
+    sheet.appendRow([
+      new Date(),
+      data.studentName || "",
+      (data.teammates || []).join(", "),
+      data.q3_contributions || "",
+      data.q4_specificPart || "",
+      data.q5_decision || "",
+      data.q6_prep || "",
+      data.q7_selfPercent + "%",
+      data.q8_evidence || "",
+      JSON.stringify(data.q9_allocations || {}),
+      JSON.stringify(data.q10_peerDescriptions || {}),
+      data.q11_distributionContext || ""
+    ]);
+    
+    return ContentService.createTextOutput(JSON.stringify({"result":"success"}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({"result":"error", "message": err.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}</pre>
+                        <button onclick="copyAppsScriptCode()" class="absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 text-white px-2 py-1 rounded text-[10px]">
+                            <i class="fa-regular fa-copy"></i> Copy
+                        </button>
+                    </div>
+
+                    <ol start="4" class="list-decimal list-inside space-y-2 font-medium">
+                        <li>Click <strong>Deploy &gt; New deployment</strong>.</li>
+                        <li>Select type: <strong>Web App</strong>.</li>
+                        <li>Set <strong>Execute as:</strong> "Me" and <strong>Who has access:</strong> "Anyone".</li>
+                        <li>Deploy, copy the Web App URL (ends in <code>/exec</code>), and replace <code>PLACE_GOOGLE_URL_HERE</code> in your website code or enter it in the "Sheet Config" button!</li>
+                    </ol>
+                </div>
+
+                <div class="flex justify-end pt-2 border-t">
+                    <button onclick="closeScriptModal()" class="px-4 py-2 bg-brand-600 text-white rounded-lg text-xs font-semibold hover:bg-brand-700">Got it!</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8">
+        <div class="max-w-4xl mx-auto px-4 text-center text-xs text-slate-500">
+            Peer Contribution Evaluation Tool &bull; Ready for GitHub Pages
+        </div>
+    </footer>
+
+    <script>
+        // ==========================================
+        // CONFIGURATION & GLOBAL STATE
+        // ==========================================
+        // Instructor URL Placeholder (Can be overridden via Settings Modal)
+        let GOOGLE_SHEET_URL = "PLACE_GOOGLE_URL_HERE";
+
+        let currentStep = 1;
+        let teammates = []; // Array of string names added in Question 2
+        let memberColors = [
+            '#2563eb', '#10b981', '#f59e0b', '#8b5cf6', 
+            '#ec4899', '#06b6d4', '#84cc16', '#e11d48'
+        ];
+        
+        // Allocation map: { "Student Name": percentage, "Teammate 1": percentage, ... }
+        let allocations = {};
+
+        // On Page Load
+        window.addEventListener('DOMContentLoaded', () => {
+            // Load custom URL from localStorage if saved
+            const savedUrl = localStorage.getItem('custom_google_sheet_url');
+            if (savedUrl) {
+                GOOGLE_SHEET_URL = savedUrl;
+            }
+            document.getElementById('googleSheetUrlInput').value = GOOGLE_SHEET_URL;
+            document.getElementById('currentCodeUrlDisplay').textContent = GOOGLE_SHEET_URL;
+            
+            updateUserInAllocation();
+            renderStepUI();
+        });
+
+        // ==========================================
+        // STEP NAVIGATION LOGIC
+        // ==========================================
+        function goToStep(step) {
+            // Validation before proceeding forward
+            if (step > currentStep) {
+                if (!validateStep(currentStep)) return;
+            }
+
+            currentStep = step;
+            renderStepUI();
+        }
+
+        function renderStepUI() {
+            // Hide all steps
+            for (let i = 1; i <= 4; i++) {
+                const stepCard = document.getElementById(`step${i}`);
+                const node = document.getElementById(`stepNode${i}`);
+                if (stepCard) stepCard.classList.add('hidden');
+                
+                if (node) {
+                    if (i === currentStep) {
+                        node.className = "py-1.5 px-1 rounded transition text-brand-700 font-bold border-b-2 border-brand-600 bg-brand-50/50";
+                    } else if (i < currentStep) {
+                        node.className = "py-1.5 px-1 rounded transition text-green-700 font-semibold flex items-center justify-center gap-1";
+                    } else {
+                        node.className = "py-1.5 px-1 rounded transition hover:text-slate-700 text-slate-400";
+                    }
+                }
+            }
+
+            // Show active step
+            const activeCard = document.getElementById(`step${currentStep}`);
+            if (activeCard) activeCard.classList.remove('hidden');
+
+            // Update Header progress bar
+            const stepTitles = [
+                "Student & Team Identification",
+                "Your Personal Contributions",
+                "Team Work Allocation (100% Total)",
+                "Teammate Contributions & Context"
+            ];
+            document.getElementById('stepBadge').textContent = `Step ${currentStep} of 4`;
+            document.getElementById('stepTitleText').textContent = stepTitles[currentStep - 1];
+            document.getElementById('progressBar').style.width = `${(currentStep / 4) * 100}%`;
+
+            // Dynamic Step Re-renders
+            if (currentStep === 3) {
+                renderAllocationSliders();
+            } else if (currentStep === 4) {
+                renderPeerFeedbackCards();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ==========================================
+        // STEP VALIDATIONS
+        // ==========================================
+        function validateStep(step) {
+            if (step === 1) {
+                const studentName = document.getElementById('studentName').value.trim();
+                if (!studentName) {
+                    alertModal("Name Required", "Please enter your name in Question 1 before proceeding.");
+                    return false;
+                }
+            } else if (step === 2) {
+                const q3 = document.getElementById('q3_contributions').value.trim();
+                const q4 = document.getElementById('q4_specificPart').value.trim();
+                const q5 = document.getElementById('q5_decision').value.trim();
+                const q6 = document.getElementById('q6_prep').value.trim();
+                const q8 = document.getElementById('q8_evidence').value.trim();
+
+                if (!q3 || !q4 || !q5 || !q6 || !q8) {
+                    alertModal("Incomplete Questions", "Please complete all required fields in Step 2.");
+                    return false;
+                }
+            } else if (step === 3) {
+                const total = calculateTotalAllocation();
+                if (total !== 100) {
+                    alertModal("Invalid Allocation Total", `Total group allocation must equal exactly 100%. Current total is ${total}%.`);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // ==========================================
+        // QUESTION 2: TEAMMATE MANAGEMENT
+        // ==========================================
+        function addGroupMember() {
+            const input = document.getElementById('newMemberInput');
+            const name = input.value.trim();
+
+            if (!name) return;
+
+            // Check duplicate
+            const currentStudent = document.getElementById('studentName').value.trim().toLowerCase();
+            if (name.toLowerCase() === currentStudent) {
+                alertModal("Notice", "Do not add your own name here. You are already included automatically!");
+                return;
+            }
+
+            if (teammates.some(t => t.toLowerCase() === name.toLowerCase())) {
+                alertModal("Duplicate Name", "This teammate is already in your group list.");
+                return;
+            }
+
+            teammates.push(name);
+            input.value = '';
+            renderTeammateChips();
+            syncAllocationsWithMembers();
+        }
+
+        function removeGroupMember(index) {
+            teammates.splice(index, 1);
+            renderTeammateChips();
+            syncAllocationsWithMembers();
+        }
+
+        function renderTeammateChips() {
+            const container = document.getElementById('membersList');
+            const emptyMsg = document.getElementById('emptyMembersMsg');
+
+            if (teammates.length === 0) {
+                container.innerHTML = '';
+                container.appendChild(emptyMsg);
+                emptyMsg.classList.remove('hidden');
+                return;
+            }
+
+            container.innerHTML = '';
+            teammates.forEach((member, index) => {
+                const color = memberColors[(index + 1) % memberColors.length];
+                const chip = document.createElement('div');
+                chip.className = "inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border rounded-full text-xs font-medium shadow-sm transition";
+                chip.innerHTML = `
+                    <span class="w-2.5 h-2.5 rounded-full inline-block" style="background-color: ${color}"></span>
+                    <span class="text-slate-800">${escapeHtml(member)}</span>
+                    <button type="button" onclick="removeGroupMember(${index})" class="text-slate-400 hover:text-red-500 ml-1">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                `;
+                container.appendChild(chip);
+            });
+        }
+
+        function updateUserInAllocation() {
+            syncAllocationsWithMembers();
+        }
+
+        function syncAllocationsWithMembers() {
+            const studentName = document.getElementById('studentName').value.trim() || "You (Yourself)";
+            const allNames = [studentName, ...teammates];
+
+            // Retain old values if existing, or re-initialize
+            const newAllocations = {};
+            const equalShare = Math.round(100 / allNames.length);
+
+            allNames.forEach((name) => {
+                if (allocations[name] !== undefined) {
+                    newAllocations[name] = allocations[name];
+                } else {
+                    newAllocations[name] = equalShare;
+                }
+            });
+
+            allocations = newAllocations;
+        }
+
+        // ==========================================
+        // QUESTION 7 & 9: SLIDERS & ALLOCATIONS LOGIC
+        // ==========================================
+        function updateQ7Badge(val) {
+            document.getElementById('q7ValueBadge').textContent = `${val}%`;
+        }
+
+        function setQ7Percent(val) {
+            document.getElementById('q7_selfPercent').value = val;
+            updateQ7Badge(val);
+        }
+
+        function renderAllocationSliders() {
+            syncAllocationsWithMembers();
+            const container = document.getElementById('allocationSlidersContainer');
+            container.innerHTML = '';
+
+            const studentName = document.getElementById('studentName').value.trim() || "You (Yourself)";
+            const allNames = Object.keys(allocations);
+
+            allNames.forEach((name, idx) => {
+                const isUser = (name === studentName);
+                const color = isUser ? memberColors[0] : memberColors[(idx) % memberColors.length];
+                const value = allocations[name] || 0;
+
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-xl border transition ${isUser ? 'bg-blue-50/40 border-blue-200' : 'bg-slate-50 border-slate-200'}`;
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full" style="background-color: ${color}"></span>
+                            <span class="font-bold text-sm text-slate-800">
+                                ${escapeHtml(name)} ${isUser ? '<span class="text-xs font-normal text-brand-600 bg-brand-50 px-2 py-0.5 rounded border border-brand-200">You</span>' : ''}
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <input type="number" min="0" max="100" value="${value}" 
+                                onchange="updateAllocationValue('${escapeQuotes(name)}', parseInt(this.value) || 0)"
+                                class="w-16 px-2 py-1 text-right text-sm font-bold rounded border border-slate-300 focus:ring-1 focus:ring-brand-500 outline-none">
+                            <span class="text-sm font-bold text-slate-600">%</span>
+                        </div>
+                    </div>
+                    <input type="range" min="0" max="100" step="1" value="${value}"
+                        style="accent-color: ${color}"
+                        oninput="updateAllocationValue('${escapeQuotes(name)}', parseInt(this.value) || 0)"
+                        class="w-full cursor-pointer">
+                `;
+                container.appendChild(card);
+            });
+
+            updateAllocationStatus();
+        }
+
+        function updateAllocationValue(name, val) {
+            if (val < 0) val = 0;
+            if (val > 100) val = 100;
+            allocations[name] = val;
+            renderAllocationSliders();
+        }
+
+        function calculateTotalAllocation() {
+            return Object.values(allocations).reduce((sum, current) => sum + (parseInt(current) || 0), 0);
+        }
+
+        function distributeEvenly() {
+            const keys = Object.keys(allocations);
+            if (keys.length === 0) return;
+
+            const baseShare = Math.floor(100 / keys.length);
+            let remainder = 100 - (baseShare * keys.length);
+
+            keys.forEach((key) => {
+                allocations[key] = baseShare + (remainder > 0 ? 1 : 0);
+                if (remainder > 0) remainder--;
+            });
+
+            renderAllocationSliders();
+        }
+
+        function updateAllocationStatus() {
+            const total = calculateTotalAllocation();
+            const sumText = document.getElementById('allocationSumText');
+            const statusBox = document.getElementById('allocationStatusBox');
+            const statusIcon = document.getElementById('allocationStatusIcon');
+            const statusMsg = document.getElementById('allocationStatusMsg');
+            const diffBadge = document.getElementById('allocationDiffBadge');
+            const stackedBar = document.getElementById('stackedBarContainer');
+
+            sumText.textContent = `${total}% / 100%`;
+
+            // Update Stacked Segment Bar
+            stackedBar.innerHTML = '';
+            const allNames = Object.keys(allocations);
+            const studentName = document.getElementById('studentName').value.trim() || "You (Yourself)";
+
+            allNames.forEach((name, idx) => {
+                const pct = allocations[name] || 0;
+                if (pct > 0) {
+                    const isUser = (name === studentName);
+                    const color = isUser ? memberColors[0] : memberColors[(idx) % memberColors.length];
+                    const seg = document.createElement('div');
+                    seg.style.width = `${pct}%`;
+                    seg.style.backgroundColor = color;
+                    seg.className = "h-full transition-all duration-200 title";
+                    seg.title = `${name}: ${pct}%`;
+                    stackedBar.appendChild(seg);
+                }
+            });
+
+            if (total === 100) {
+                sumText.className = "text-green-600 font-bold";
+                statusBox.className = "p-4 rounded-xl border text-sm font-medium flex items-center justify-between bg-green-50 border-green-200 text-green-800";
+                statusIcon.className = "fa-solid fa-circle-check text-lg text-green-600";
+                statusMsg.textContent = "Perfect! Your total group work allocation equals exactly 100%.";
+                diffBadge.className = "text-xs px-2.5 py-1 rounded-full font-bold bg-green-200 text-green-900";
+                diffBadge.textContent = "Valid 100%";
+            } else {
+                const diff = total - 100;
+                sumText.className = "text-red-600 font-bold";
+                statusBox.className = "p-4 rounded-xl border text-sm font-medium flex items-center justify-between bg-red-50 border-red-200 text-red-800";
+                statusIcon.className = "fa-solid fa-circle-exclamation text-lg text-red-600";
+                statusMsg.textContent = `Total group allocation must equal 100%. (Current: ${total}%)`;
+                diffBadge.className = "text-xs px-2.5 py-1 rounded-full font-bold bg-red-200 text-red-900";
+                diffBadge.textContent = diff > 0 ? `+${diff}% Over` : `${diff}% Short`;
+            }
+        }
+
+        // ==========================================
+        // QUESTION 10: DYNAMIC PEER FEEDBACK CARDS
+        // ==========================================
+        function renderPeerFeedbackCards() {
+            const container = document.getElementById('teammatesFeedbackContainer');
+            
+            if (teammates.length === 0) {
+                container.innerHTML = `
+                    <p id="noTeammatesFeedbackMsg" class="text-sm text-slate-500 italic p-4 bg-slate-50 rounded-lg text-center border">
+                        No teammates were added in Step 1. If you worked solo, you may proceed. Otherwise, click "Previous" to add your team members!
+                    </p>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            teammates.forEach((member, index) => {
+                const color = memberColors[(index + 1) % memberColors.length];
+                const card = document.createElement('div');
+                card.className = "p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2";
+                card.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full inline-block" style="background-color: ${color}"></span>
+                        <label for="peer_desc_${index}" class="text-sm font-bold text-slate-800">
+                            Contribution description for: <span class="text-brand-600">${escapeHtml(member)}</span> <span class="text-red-500">*</span>
+                        </label>
+                    </div>
+                    <textarea id="peer_desc_${index}" data-teammate="${escapeQuotes(member)}" rows="3" required
+                        placeholder="What specific tasks, slides, components, or research did ${escapeQuotes(member)} contribute?"
+                        class="w-full p-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-sm bg-white"></textarea>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // ==========================================
+        // SUBMISSION & GOOGLE SHEETS DISPATCH
+        // ==========================================
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+
+            // Validate Final Confirmation
+            const confirmChk = document.getElementById('q12_confirm');
+            if (!confirmChk.checked) {
+                alertModal("Confirmation Required", "Please check Question 12 to confirm your responses before submitting.");
+                return;
+            }
+
+            // Ensure 100% Total
+            if (calculateTotalAllocation() !== 100) {
+                alertModal("Allocation Error", "Group allocation must equal exactly 100% in Step 3.");
+                goToStep(3);
+                return;
+            }
+
+            // Collect Peer Feedback Q10
+            const peerDescriptions = {};
+            teammates.forEach((member, idx) => {
+                const el = document.getElementById(`peer_desc_${idx}`);
+                peerDescriptions[member] = el ? el.value.trim() : "";
+            });
+
+            // Build Payload Object
+            const payload = {
+                timestamp: new Date().toISOString(),
+                studentName: document.getElementById('studentName').value.trim(),
+                teammates: teammates,
+                q3_contributions: document.getElementById('q3_contributions').value.trim(),
+                q4_specificPart: document.getElementById('q4_specificPart').value.trim(),
+                q5_decision: document.getElementById('q5_decision').value.trim(),
+                q6_prep: document.getElementById('q6_prep').value.trim(),
+                q7_selfPercent: parseInt(document.getElementById('q7_selfPercent').value),
+                q8_evidence: document.getElementById('q8_evidence').value.trim(),
+                q9_allocations: allocations,
+                q10_peerDescriptions: peerDescriptions,
+                q11_distributionContext: document.getElementById('q11_distributionContext').value.trim()
+            };
+
+            const submitBtn = document.getElementById('submitBtn');
+            const originalBtnHtml = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Submitting...`;
+
+            try {
+                // If instructor has configured a valid URL
+                if (GOOGLE_SHEET_URL && GOOGLE_SHEET_URL !== "PLACE_GOOGLE_URL_HERE") {
+                    await fetch(GOOGLE_SHEET_URL, {
+                        method: 'POST',
+                        mode: 'no-cors', // Standard CORS mode for Google Apps Script Web Apps
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                }
+            } catch (err) {
+                console.warn("Sheet dispatch notice:", err);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+
+                // Display Success Modal
+                document.getElementById('submissionSummaryBox').textContent = JSON.stringify(payload, null, 2);
+                document.getElementById('successModal').classList.remove('hidden');
+            }
+        }
+
+        // ==========================================
+        // UTILITIES & MODAL HELPERS
+        // ==========================================
+        function resetFormConfirmation() {
+            if (confirm("Are you sure you want to reset all form responses?")) {
+                document.getElementById('evalForm').reset();
+                teammates = [];
+                allocations = {};
+                renderTeammateChips();
+                goToStep(1);
+            }
+        }
+
+        function openSettingsModal() {
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        function saveGoogleUrlSetting() {
+            const url = document.getElementById('googleSheetUrlInput').value.trim();
+            if (url) {
+                GOOGLE_SHEET_URL = url;
+                localStorage.setItem('custom_google_sheet_url', url);
+                document.getElementById('currentCodeUrlDisplay').textContent = url;
+                alertModal("Saved!", "Google Sheet Web App URL updated successfully.");
+            }
+            closeSettingsModal();
+        }
+
+        function openScriptModal() {
+            document.getElementById('scriptModal').classList.remove('hidden');
+        }
+
+        function closeScriptModal() {
+            document.getElementById('scriptModal').classList.add('hidden');
+        }
+
+        function alertModal(title, message) {
+            alert(`${title}\n\n${message}`);
+        }
+
+        function copyAppsScriptCode() {
+            const code = `function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var data = JSON.parse(e.postData.contents);
+    
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow([
+        "Timestamp", "Student Name", "Teammates", 
+        "Q3 Contributions", "Q4 Specific Part", "Q5 Decision", 
+        "Q6 Prep Work", "Q7 Self %", "Q8 Evidence", 
+        "Q9 Group Allocations", "Q10 Peer Descriptions", 
+        "Q11 Additional Context"
+      ]);
+    }
+    
+    sheet.appendRow([
+      new Date(),
+      data.studentName || "",
+      (data.teammates || []).join(", "),
+      data.q3_contributions || "",
+      data.q4_specificPart || "",
+      data.q5_decision || "",
+      data.q6_prep || "",
+      data.q7_selfPercent + "%",
+      data.q8_evidence || "",
+      JSON.stringify(data.q9_allocations || {}),
+      JSON.stringify(data.q10_peerDescriptions || {}),
+      data.q11_distributionContext || ""
+    ]);
+    
+    return ContentService.createTextOutput(JSON.stringify({"result":"success"}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({"result":"error", "message": err.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}`;
+            copyToClipboard(code);
+        }
+
+        function copySubmissionData() {
+            const text = document.getElementById('submissionSummaryBox').textContent;
+            copyToClipboard(text);
+        }
+
+        function copyToClipboard(text) {
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+            alertModal("Copied!", "Text copied to clipboard.");
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        function escapeQuotes(str) {
+            return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+    </script>
+</body>
+</html>
